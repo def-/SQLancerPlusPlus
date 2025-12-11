@@ -40,7 +40,7 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
     public boolean testIndexes = true;
 
     @Parameter(names = "--test-random-commands", description = "The maximum number of random commands that are issued for a database", arity = 1)
-    public boolean testRandomCommands = false;
+    public boolean testRandomCommands;
 
     @Parameter(names = "--max-num-views", description = "The maximum number of views that can be generated for a database", arity = 1)
     public int maxNumViews = 1;
@@ -58,13 +58,13 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
     public boolean enableFeedback = true;
 
     @Parameter(names = "--untype-expr", description = "Allow untyped expressions", arity = 1)
-    public boolean untypeExpr = false;
+    public boolean untypeExpr;
 
     @Parameter(names = "--database-table-delim", description = "The delimiter for database tables", arity = 1)
     public String dbTableDelim = "_";
 
     @Parameter(names = "--use-deduplicator", description = "Use the deduplicator")
-    public boolean useDeduplicator = false;
+    public boolean useDeduplicator;
 
     @Parameter(names = "--compatible-with", description = "The popupar DBMS to be compatible with")
     public String compatibleWith = "";
@@ -73,7 +73,7 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
     public boolean useRetrievalAugmentation = true;
 
     @Parameter(names = "--enable-direct-validation", description = "Enable direct validation", arity = 1)
-    public boolean enableDirectValidation = false;
+    public boolean enableDirectValidation;
 
     public enum GeneralOracleFactory implements OracleFactory<GeneralGlobalState> {
         NOREC {

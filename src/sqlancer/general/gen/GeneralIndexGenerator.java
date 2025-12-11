@@ -22,13 +22,13 @@ import sqlancer.general.learner.GeneralStringBuilder;
 
 public final class GeneralIndexGenerator {
 
-    private GeneralIndexGenerator() {
-    }
-
     private static GeneralIndexFragments fragments = new GeneralIndexFragments();
     private static final String CONFIG_NAME = "indexgenerator.txt";
     private static final String STATEMENT = "CREATE_INDEX";
     private static final SQLFeature FEATURE = SQLFeature.CLAUSE;
+
+    private GeneralIndexGenerator() {
+    }
 
     private static final class GeneralIndexFragments extends GeneralFragments {
         GeneralIndexFragments() {

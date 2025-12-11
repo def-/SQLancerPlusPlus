@@ -20,13 +20,13 @@ import sqlancer.general.learner.GeneralStringBuilder;
 
 public final class GeneralTableGenerator {
 
-    private GeneralTableGenerator() {
-    }
-
     private static GeneralTableFragments fragments = new GeneralTableFragments();
     private static final String CONFIG_NAME = "tablegenerator.txt";
     private static final String STATEMENT = "CREATE_TABLE";
     private static final SQLFeature FEATURE = SQLFeature.CLAUSE;
+
+    private GeneralTableGenerator() {
+    }
 
     private static final class GeneralTableFragments extends GeneralFragments {
         GeneralTableFragments() {
@@ -75,6 +75,7 @@ public final class GeneralTableGenerator {
             return CONFIG_NAME;
         }
 
+        @Override
         public String getStatementType() {
             return STATEMENT;
         }

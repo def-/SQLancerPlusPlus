@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +32,12 @@ import sqlancer.general.ast.GeneralExpression;
 import sqlancer.general.gen.GeneralRandomQuerySynthesizer;
 
 public abstract class GeneralFragments {
+
+    private boolean learnFlag;
+    public static final String PLACEHOLDER = "{%d}";
+    private Map<String, List<GeneralFragmentChoice>> fragments = new HashMap<>();
+    private final Map<String, List<GeneralFragmentChoice>> newFragments = new HashMap<>();
+    protected String currentSketch = "";
 
     protected enum GeneralFragmentVariable {
         RANDOM_INT((g) -> {
@@ -105,6 +112,7 @@ public abstract class GeneralFragments {
             node = generator.generate(state);
         }
 
+        @Override
         public String toString() {
             return GeneralToStringVisitor.asString(node);
         }
@@ -116,9 +124,9 @@ public abstract class GeneralFragments {
 
     public class GeneralFragmentChoice {
 
-        private String fmtString;
-        private List<GeneralFragmentVariable> vars;
-        private String key;
+        private final String fmtString;
+        private final List<GeneralFragmentVariable> vars;
+        private final String key;
 
         public GeneralFragmentChoice(String fmtString, List<GeneralFragmentVariable> vars, String key) {
             this.fmtString = fmtString;
@@ -169,12 +177,6 @@ public abstract class GeneralFragments {
 
     }
 
-    private boolean learnFlag = false;
-    public static final String PLACEHOLDER = "{%d}";
-    private HashMap<String, List<GeneralFragmentChoice>> fragments = new HashMap<>();
-    private HashMap<String, List<GeneralFragmentChoice>> newFragments = new HashMap<>();
-    protected String currentSketch = "";
-
     public GeneralFragments() {
         this.fragments = new HashMap<>();
     }
@@ -187,7 +189,7 @@ public abstract class GeneralFragments {
         return learnFlag;
     }
 
-    public HashMap<String, List<GeneralFragmentChoice>> getFragments() {
+    public Map<String, List<GeneralFragmentChoice>> getFragments() {
         return fragments;
     }
 
@@ -199,22 +201,22 @@ public abstract class GeneralFragments {
             newFragments.put(key, new ArrayList<>());
         }
         // remove trailing spaces
-        fmtString = fmtString.trim();
+        String trimmedFmtString = fmtString.trim();
         // avoid duplicate:
         for (GeneralFragmentChoice choice : fragments.get(key)) {
-            if (choice.fmtString.equals(fmtString)) {
+            if (choice.fmtString.equals(trimmedFmtString)) {
                 // System.out.println("Duplicate fragment");
                 return;
             }
         }
         try {
-            validateFragment(fmtString, vars);
+            validateFragment(trimmedFmtString, vars);
         } catch (Exception e) {
-            System.err.println(String.format("Invalid format string %s", fmtString));
+            System.err.println(String.format("Invalid format string %s", trimmedFmtString));
             System.err.println(e.getMessage());
             throw e;
         }
-        GeneralFragmentChoice choice = new GeneralFragmentChoice(fmtString, vars, key);
+        GeneralFragmentChoice choice = new GeneralFragmentChoice(trimmedFmtString, vars, key);
         // check if it's disabled by the handler
         if (!GeneralErrorHandler.checkFragmentAvailability(choice)) {
             // System.out.println(String.format("Fragment %s is disabled", fmtString));
@@ -289,7 +291,7 @@ public abstract class GeneralFragments {
                     }
                 } catch (Exception e) {
                     // System.out.println(String.format("Error parsing %s for statement %s", String.join(" ", s),
-                    //         getStatementType()));
+                    // getStatementType()));
                     // System.err.println(e.getMessage());
                 }
             }
@@ -299,7 +301,11 @@ public abstract class GeneralFragments {
     }
 
     protected void validateFragment(String fmtString, List<GeneralFragmentVariable> vars) {
-        String.format(fmtString, vars.stream().map(var -> var.name()).toArray());
+        // Validate that the format string is compatible with the variables; throws IllegalFormatException if invalid
+        String formatted = String.format(fmtString, vars.stream().map(var -> var.name()).toArray());
+        if (formatted == null) {
+            throw new AssertionError("Unexpected null result from String.format");
+        }
     }
 
     protected void parseSpecificFragments(String[] s, GeneralGlobalState globalState) {

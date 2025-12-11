@@ -49,10 +49,12 @@ public class GeneralTypedExpressionGenerator
         this.globalState = globalState;
     }
 
+    @Override
     public Node<GeneralExpression> generateExpression() {
         return generateExpression(GeneralDataType.BOOLEAN.get());
     }
 
+    @Override
     public Node<GeneralExpression> generateExpression(boolean isTyped) {
         if (isTyped) {
             return generateExpression(GeneralDataType.BOOLEAN.get());
@@ -70,6 +72,7 @@ public class GeneralTypedExpressionGenerator
     // return getAggregate(getRandomType());
     // }
 
+    @Override
     public Node<GeneralExpression> generateHavingClause() {
         allowAggregates = true;
         Node<GeneralExpression> expression = generateExpression(GeneralDataType.BOOLEAN.get());
@@ -113,7 +116,7 @@ public class GeneralTypedExpressionGenerator
                     .collect(Collectors.toList());
             GeneralCompositeDataType type;
             // TODO: make it fully controlled by the handler
-            if (availTypes.size() == 0 || Randomly.getBooleanWithRatherLowProbability()) {
+            if (availTypes.isEmpty() || Randomly.getBooleanWithRatherLowProbability()) {
                 type = getRandomType();
             } else {
                 type = Randomly.fromList(availTypes);
@@ -196,7 +199,7 @@ public class GeneralTypedExpressionGenerator
                                     .getCompositeOptionNullAsFalse("BINOP" + op.toString() + "-" + t.toString()))
                             .collect(Collectors.toList());
                     GeneralCompositeDataType newType;
-                    if (availTypes.size() == 0 || Randomly.getBooleanWithRatherLowProbability()) {
+                    if (availTypes.isEmpty() || Randomly.getBooleanWithRatherLowProbability()) {
                         newType = getRandomType();
                     } else {
                         newType = Randomly.fromList(availTypes);

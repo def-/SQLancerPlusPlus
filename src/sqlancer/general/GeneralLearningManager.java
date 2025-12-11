@@ -13,6 +13,13 @@ import sqlancer.general.ast.GeneralFunction;
 import sqlancer.general.learner.GeneralFragments;
 
 public class GeneralLearningManager {
+
+    private String curTopic;
+    private int learnCount;
+    // if True, then the topic is learned
+    private static Map<String, String> topics = new HashMap<>();
+    private static volatile Map<String, Boolean> topicPool = new HashMap<>();
+
     public enum SQLFeature {
         COMMAND("command", true), //
         DATATYPE("datatype", false), //
@@ -42,12 +49,6 @@ public class GeneralLearningManager {
     public GeneralLearningManager() {
     }
 
-    private String curTopic;
-    private int learnCount;
-    // if True, then the topic is learned
-    private static HashMap<String, String> topics = new HashMap<>();
-    private static volatile HashMap<String, Boolean> topicPool = new HashMap<>();
-
     public String getTopic() {
         return curTopic;
     }
@@ -69,7 +70,7 @@ public class GeneralLearningManager {
         return learnCount;
     }
 
-    public HashMap<String, Boolean> getTopicPool() {
+    public Map<String, Boolean> getTopicPool() {
         return topicPool;
     }
 

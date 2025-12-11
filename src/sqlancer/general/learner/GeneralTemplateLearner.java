@@ -24,12 +24,12 @@ public class GeneralTemplateLearner implements FeatureLearner {
     private final String apiKey = System.getenv("OPENAI_API_KEY");
 
     private String rawFragments = "";
-    private GeneralGlobalState globalState;
-    private SQLFeature feature;
-    private String template;
-    private String variables;
-    private String systemPrompt;
-    private String topic;
+    private final GeneralGlobalState globalState;
+    private final SQLFeature feature;
+    private final String template;
+    private final String variables;
+    private final String systemPrompt;
+    private final String topic;
 
     // optional things
     private String examples = "";

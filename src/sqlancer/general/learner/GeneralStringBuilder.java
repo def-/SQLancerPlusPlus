@@ -5,10 +5,10 @@ import sqlancer.general.GeneralProvider.GeneralGlobalState;
 
 public class GeneralStringBuilder<E extends GeneralFragments> {
 
-    private StringBuilder sb;
-    private E fragments;
-    private GeneralGlobalState state;
-    private boolean couldRandom;
+    private final StringBuilder sb;
+    private final E fragments;
+    private final GeneralGlobalState state;
+    private final boolean couldRandom;
 
     public GeneralStringBuilder(GeneralGlobalState globalState, E fragments) {
         this.sb = new StringBuilder();
@@ -41,6 +41,7 @@ public class GeneralStringBuilder<E extends GeneralFragments> {
         }
     }
 
+    @Override
     public String toString() {
         return sb.toString();
     }

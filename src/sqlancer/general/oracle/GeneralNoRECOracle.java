@@ -58,6 +58,7 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
             this.errorMessage = errorMessage;
         }
 
+        @Override
         public String getErrorMessage() {
             return errorMessage;
         }
@@ -71,7 +72,8 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
                 try {
                     srs = q.executeAndGet(globalState);
                 } catch (Exception e) {
-                    throw new AssertionError(e);
+                    this.errorMessage = e.getMessage();
+                    return true;
                 }
                 if (srs == null) {
                     secondCount = -1;
@@ -83,27 +85,27 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
                 }
 
                 // first count
-                int firstCount = 0;
+                int firstCount = -1;
                 try (Statement stat = globalState.getConnection().createStatement()) {
                     try (ResultSet rs = stat.executeQuery(firstQueryString)) {
+                        firstCount = 0;
                         while (rs.next()) {
                             firstCount++;
                         }
                     }
                 } catch (SQLException e) {
-                    throw new IgnoreMeException();
+                    // Query failed, treat as inconclusive
+                    return false;
                 }
 
                 if (firstCount == -1 || secondCount == -1) {
-                    throw new IgnoreMeException();
+                    return false;
                 }
                 if (firstCount != secondCount) {
-                    throw new AssertionError(
-                            firstQueryString + "; -- " + firstCount + "\n" + secondQueryString + " -- " + secondCount);
+                    this.errorMessage = firstQueryString + "; -- " + firstCount + "\n" + secondQueryString + " -- "
+                            + secondCount;
+                    return true;
                 }
-            } catch (AssertionError triggeredError) {
-                this.errorMessage = triggeredError.getMessage();
-                return true;
             } catch (SQLException ignored) {
             }
             return false;

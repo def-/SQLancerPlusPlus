@@ -32,6 +32,32 @@ import sqlancer.general.learner.GeneralFragments.GeneralFragmentChoice;
 
 public class GeneralErrorHandler implements ErrorHandler {
 
+    // volatile
+    private static Map<String, Integer> curDepth = new HashMap<>();
+    private static volatile int execDatabaseNum;
+    private static volatile Map<String, GeneratorInfo> assertionGeneratorHistory = new HashMap<>();
+    private static volatile Map<GeneratorNode, Boolean> generatorOptions = new HashMap<>();
+    private static volatile Map<String, Boolean> compositeGeneratorOptions = new HashMap<>();
+    private static volatile Map<GeneralFragmentChoice, Boolean> fragmentOptions = new HashMap<>();
+    private static volatile List<String> disabledFragments = new ArrayList<>();
+
+    private static volatile Map<String, Integer> allCompositeSuccess = new HashMap<>();
+    private static volatile Map<String, Integer> allCompositeCount = new HashMap<>();
+    private static volatile Map<GeneralFragmentChoice, Integer> allFragmentSuccess = new HashMap<>();
+    private static volatile Map<GeneralFragmentChoice, Integer> allFragmentCount = new HashMap<>();
+    private static volatile Map<GeneratorNode, Integer> allNodeSuccess = new HashMap<>();
+    private static volatile Map<GeneratorNode, Integer> allNodeCount = new HashMap<>();
+
+    private static volatile Map<GeneratorNode, Double> generatorAverage = new HashMap<>();
+    private static volatile Map<String, Double> compositeAverage = new HashMap<>();
+    private static volatile Map<GeneralFragmentChoice, Double> fragmentAverage = new HashMap<>();
+
+    private static volatile Map<GeneratorNode, String> generatorExample = new HashMap<>();
+    private static volatile Map<String, String> compositeExample = new HashMap<>();
+    private static volatile Map<GeneralFragmentChoice, String> fragmentExample = new HashMap<>();
+
+    private double nodeNum = GeneratorNode.values().length;
+
     private final GeneratorInfoTable generatorTable;
     private GeneratorInfo generatorInfo;
 
@@ -178,7 +204,7 @@ public class GeneralErrorHandler implements ErrorHandler {
             }
             for (Map.Entry<N, Integer> entry : allSuccess.entrySet()) {
                 int cnt = allCount.get(entry.getKey());
-                if (cnt > minCnt || (quickStart && entry.getValue() > 0)) {
+                if (cnt > minCnt || quickStart && entry.getValue() > 0) {
                     average.put(entry.getKey(), (double) entry.getValue() / cnt);
                 }
             }
@@ -186,32 +212,6 @@ public class GeneralErrorHandler implements ErrorHandler {
         }
 
     }
-
-    // volatile
-    private static Map<String, Integer> curDepth = new HashMap<>();
-    private static volatile int execDatabaseNum = 0;
-    private static volatile Map<String, GeneratorInfo> assertionGeneratorHistory = new HashMap<>();
-    private static volatile Map<GeneratorNode, Boolean> generatorOptions = new HashMap<>();
-    private static volatile Map<String, Boolean> compositeGeneratorOptions = new HashMap<>();
-    private static volatile Map<GeneralFragmentChoice, Boolean> fragmentOptions = new HashMap<>();
-    private static volatile List<String> disabledFragments = new ArrayList<>();
-
-    private static volatile Map<String, Integer> allCompositeSuccess = new HashMap<>();
-    private static volatile Map<String, Integer> allCompositeCount = new HashMap<>();
-    private static volatile Map<GeneralFragmentChoice, Integer> allFragmentSuccess = new HashMap<>();
-    private static volatile Map<GeneralFragmentChoice, Integer> allFragmentCount = new HashMap<>();
-    private static volatile Map<GeneratorNode, Integer> allNodeSuccess = new HashMap<>();
-    private static volatile Map<GeneratorNode, Integer> allNodeCount = new HashMap<>();
-
-    private static volatile Map<GeneratorNode, Double> generatorAverage = new HashMap<>();
-    private static volatile Map<String, Double> compositeAverage = new HashMap<>();
-    private static volatile Map<GeneralFragmentChoice, Double> fragmentAverage = new HashMap<>();
-
-    private static volatile Map<GeneratorNode, String> generatorExample = new HashMap<>();
-    private static volatile Map<String, String> compositeExample = new HashMap<>();
-    private static volatile Map<GeneralFragmentChoice, String> fragmentExample = new HashMap<>();
-
-    private double nodeNum = GeneratorNode.values().length;
 
     public enum GeneratorNode {
         // Meta nodes
@@ -246,7 +246,7 @@ public class GeneralErrorHandler implements ErrorHandler {
         return nodeNum;
     }
 
-    public void incrementExecDatabaseNum() {
+    public static void incrementExecDatabaseNum() {
         execDatabaseNum++;
     }
 
@@ -268,9 +268,9 @@ public class GeneralErrorHandler implements ErrorHandler {
     }
 
     public int getCurDepth(String databaseName) {
-        databaseName = databaseName.split("_")[0]; // for experiment usage
-        if (curDepth.containsKey(databaseName)) {
-            return curDepth.get(databaseName);
+        String dbKey = databaseName.split("_")[0]; // for experiment usage
+        if (curDepth.containsKey(dbKey)) {
+            return curDepth.get(dbKey);
         } else {
             // We currently don't explicitly initiate the depth of the database
             return 1;
@@ -278,27 +278,25 @@ public class GeneralErrorHandler implements ErrorHandler {
     }
 
     public void setCurDepth(String databaseName, int depth) {
-        databaseName = databaseName.split("_")[0];
-        curDepth.put(databaseName, depth);
+        String dbKey = databaseName.split("_")[0];
+        curDepth.put(dbKey, depth);
     }
 
     public void incrementCurDepth(String databaseName) {
-        databaseName = databaseName.split("_")[0];
-        if (curDepth.containsKey(databaseName)) {
-            curDepth.put(databaseName, curDepth.get(databaseName) + 1);
+        String dbKey = databaseName.split("_")[0];
+        if (curDepth.containsKey(dbKey)) {
+            curDepth.put(dbKey, curDepth.get(dbKey) + 1);
         } else {
             // we initiate the depth of the database here.
-            curDepth.put(databaseName, 2);
+            curDepth.put(dbKey, 2);
         }
     }
 
     private synchronized <N> void updateByLeastOnce(Map<N, Double> score, Map<N, Boolean> options) {
         for (Map.Entry<N, Double> entry : score.entrySet()) {
-            if (options.containsKey(entry.getKey())) {
-                if (options.get(entry.getKey())) {
-                    // If true, then continue, don't make available function unavailable
-                    continue;
-                }
+            if (options.containsKey(entry.getKey()) && options.get(entry.getKey())) {
+                // If true, then continue, don't make available function unavailable
+                continue;
             }
             if (entry.getValue() > 0) {
                 options.put(entry.getKey(), true);
@@ -329,6 +327,7 @@ public class GeneralErrorHandler implements ErrorHandler {
                 allFragmentSuccess, allFragmentCount, 10, true);
     }
 
+    @Override
     public void updateGeneratorOptions() {
 
         // if not zero then the option is true
@@ -352,7 +351,7 @@ public class GeneralErrorHandler implements ErrorHandler {
                 final int ind = i;
                 List<GeneralCompositeDataType> availTypes = GeneralCompositeDataType.getSupportedTypes().stream()
                         .filter(t -> getCompositeOption(funcName, ind + t.toString())).collect(Collectors.toList());
-                if (availTypes.size() == 0) {
+                if (availTypes.isEmpty()) {
                     System.out.println("Function " + funcName + " with " + i + " arguments is not available");
                     setCompositeOption("FUNCTION-" + funcName, false);
                 }
@@ -537,15 +536,15 @@ public class GeneralErrorHandler implements ErrorHandler {
 
         for (GeneratorInfo generator : history) {
             // 0. If the error status is different, then it is not a duplicate bug
-            if (isError != (!generator.getStatus())) {
+            if (isError != !generator.getStatus()) {
                 continue;
             }
             Set<GeneratorNode> generatorNodes = new HashSet<>(generator.getGeneratorScore().keySet());
             generatorNodes.remove(GeneratorNode.UNTYPE_EXPR);
             // 1. if it is empty, then it's a expression with only constant. Probably a
             // String comment false alarm
-            if (generatorNodes.size() == 0) {
-                if (nodes.size() == 0) {
+            if (generatorNodes.isEmpty()) {
+                if (nodes.isEmpty()) {
                     duplicate = true;
                     System.out.println("Duplicated bug found, ignore it.");
                     break;
@@ -661,7 +660,7 @@ public class GeneralErrorHandler implements ErrorHandler {
 
     public boolean getOption(GeneratorNode option) {
         Boolean value = generatorOptions.get(option);
-        return value != null ? value : true;
+        return value == null || value;
     }
 
     public void setCompositeOption(String option, boolean value) {
@@ -690,7 +689,7 @@ public class GeneralErrorHandler implements ErrorHandler {
     public boolean getCompositeOption(String option) {
         // TODO: make it simplifier
         Boolean value = compositeGeneratorOptions.get(option);
-        return value != null ? value : true;
+        return value == null || value;
         // if (compositeGeneratorOptions.containsKey(option)) {
         // return compositeGeneratorOptions.get(option);
         // } else {
@@ -700,12 +699,12 @@ public class GeneralErrorHandler implements ErrorHandler {
 
     public boolean getCompositeOptionNullAsFalse(String option) {
         Boolean value = compositeGeneratorOptions.get(option);
-        return value != null ? value : false;
+        return value != null && value;
     }
 
     public boolean getFragmentOption(GeneralFragmentChoice option) {
         Boolean value = fragmentOptions.get(option);
-        return value != null ? value : true;
+        return value == null || value;
         // if (fragmentOptions.containsKey(option)) {
         // return fragmentOptions.get(option);
         // } else {

@@ -37,6 +37,7 @@ public class GeneralQueryPartitioningWhere extends GeneralQueryPartitioningBase 
             this.errorMessage = errorMessage;
         }
 
+        @Override
         public String getErrorMessage() {
             return errorMessage;
         }

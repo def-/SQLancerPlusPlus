@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,10 +32,10 @@ public class GeneralSchema extends AbstractSchema<GeneralGlobalState, GeneralTab
     private static final String STATEMENT = "DATATYPE";
     private static final SQLFeature FEATURE = SQLFeature.DATATYPE;
 
-    private static int typeCounter = 0;
-    private static volatile HashMap<Integer, String> typeMap = new HashMap<>();
-    private static HashMap<String, Boolean> typeAvailabilityMap = new HashMap<>();
-    private static HashMap<String, List<String>> typeToFunction = new HashMap<>();
+    private static int typeCounter;
+    private static volatile Map<Integer, String> typeMap = new HashMap<>();
+    private static Map<String, Boolean> typeAvailabilityMap = new HashMap<>();
+    private static Map<String, List<String>> typeToFunction = new HashMap<>();
 
     private static final class GeneralTypeFragments extends GeneralFragments {
         GeneralTypeFragments() {

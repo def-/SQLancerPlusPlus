@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import sqlancer.Randomly;
@@ -28,7 +29,7 @@ public class GeneralFunction {
     private String name;
     // String: function name
     // Integer: number of arguments, if negative then variadic
-    private static HashMap<String, Integer> functions = initFunctions();
+    private static Map<String, Integer> functions = initFunctions();
     private static GeneralFunctionFragments fragments = new GeneralFunctionFragments();
 
     private static final class GeneralFunctionFragments extends GeneralFragments {
@@ -147,9 +148,9 @@ public class GeneralFunction {
         return new SQLQueryAdapter(sb.toString());
     }
 
-    private static HashMap<String, Integer> initFunctions() {
+    private static Map<String, Integer> initFunctions() {
         // put all functions from GeneralDBFunction into hashmap functions
-        HashMap<String, Integer> initFunctions = new HashMap<>();
+        Map<String, Integer> initFunctions = new HashMap<>();
         for (GeneralDBFunction func : GeneralDBFunction.values()) {
             initFunctions.put(func.toString(), func.getVarArgs());
         }
@@ -178,14 +179,14 @@ public class GeneralFunction {
         return List.copyOf(functions.keySet());
     }
 
-    public static HashMap<String, Integer> getFunctions() {
+    public static Map<String, Integer> getFunctions() {
         return functions;
     }
 
     public static GeneralFunction getRandomByOptions(GeneralErrorHandler handler) {
         GeneralFunction op;
         String node;
-        if (functions.size() <= 0) {
+        if (functions.isEmpty()) {
             return null;
         }
         do {
@@ -258,7 +259,7 @@ public class GeneralFunction {
         mergeFunctions(newFuncsUpper);
     }
 
-    public static void mergeFunctions(HashMap<String, Integer> newFunctions) {
+    public static void mergeFunctions(Map<String, Integer> newFunctions) {
         functions.putAll(newFunctions);
     }
 

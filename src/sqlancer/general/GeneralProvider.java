@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.auto.service.AutoService;
 
@@ -129,12 +130,12 @@ public class GeneralProvider extends SQLProviderAdapter<GeneralProvider.GeneralG
 
     public static class GeneralGlobalState extends SQLGlobalState<GeneralOptions, GeneralSchema> {
         private GeneralSchema schema = new GeneralSchema(new ArrayList<>());
-        private GeneralErrorHandler handler = new GeneralErrorHandler();
-        private GeneralLearningManager manager = new GeneralLearningManager();
+        private final GeneralErrorHandler handler = new GeneralErrorHandler();
+        private final GeneralLearningManager manager = new GeneralLearningManager();
         private GeneralTable updateTable;
-        private boolean creatingDatabase = false; // is currently creating database
+        private boolean creatingDatabase; // is currently creating database
 
-        private HashMap<String, String> testObjectMap = new HashMap<>();
+        private final Map<String, String> testObjectMap = new HashMap<>();
 
         private static final File CONFIG_DIRECTORY = new File("dbconfigs");
 
@@ -148,10 +149,11 @@ public class GeneralProvider extends SQLProviderAdapter<GeneralProvider.GeneralG
             if (testObjectMap.isEmpty()) {
                 return key;
             } else {
-                for (HashMap.Entry<String, String> entry : testObjectMap.entrySet()) {
-                    key = key.replace(entry.getKey(), entry.getValue());
+                String result = key;
+                for (Map.Entry<String, String> entry : testObjectMap.entrySet()) {
+                    result = result.replace(entry.getKey(), entry.getValue());
                 }
-                return key;
+                return result;
             }
         }
 
@@ -269,7 +271,7 @@ public class GeneralProvider extends SQLProviderAdapter<GeneralProvider.GeneralG
                 }
             }
             if (getDbmsSpecificOptions().enableErrorHandling) {
-                handler.incrementExecDatabaseNum();
+                GeneralErrorHandler.incrementExecDatabaseNum();
                 if (!status) {
                     // print the last item of handler.
                     System.out.println(databaseName);
@@ -585,7 +587,7 @@ public class GeneralProvider extends SQLProviderAdapter<GeneralProvider.GeneralG
             String[] rawqueries = sb.toString().split(";");
             List<String> queries = new ArrayList<>();
             for (String query : rawqueries) {
-                if (!query.trim().isEmpty()) {
+                if (!query.isBlank()) {
                     queries.add(query);
                 }
             }

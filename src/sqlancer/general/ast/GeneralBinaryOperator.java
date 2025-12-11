@@ -3,6 +3,7 @@ package sqlancer.general.ast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,12 +21,12 @@ import sqlancer.general.learner.GeneralStringBuilder;
 
 public class GeneralBinaryOperator implements Operator {
 
-    private String name;
+    private final String name;
 
     private static final String CONFIG_NAME = "operators.txt";
     private static final SQLFeature FEATURE = SQLFeature.OPERATOR;
 
-    private static HashMap<String, GeneralCompositeDataType> operators = initOperators();
+    private static Map<String, GeneralCompositeDataType> operators = initOperators();
     private static GeneralBinaryOperatorFragments fragments = new GeneralBinaryOperatorFragments();
 
     private static final class GeneralBinaryOperatorFragments extends GeneralFragments {
@@ -141,7 +142,7 @@ public class GeneralBinaryOperator implements Operator {
         return op;
     }
 
-    public static HashMap<String, GeneralCompositeDataType> getOperators() {
+    public static Map<String, GeneralCompositeDataType> getOperators() {
         return operators;
     }
 
@@ -163,8 +164,8 @@ public class GeneralBinaryOperator implements Operator {
         return new SQLQueryAdapter(sb.toString());
     }
 
-    private static HashMap<String, GeneralCompositeDataType> initOperators() {
-        HashMap<String, GeneralCompositeDataType> ops = new HashMap<>();
+    private static Map<String, GeneralCompositeDataType> initOperators() {
+        Map<String, GeneralCompositeDataType> ops = new HashMap<>();
         ops.put("$$$", GeneralDataType.BOOLEAN.get());
         ops.put("<>", GeneralDataType.BOOLEAN.get());
         ops.put("!=", GeneralDataType.BOOLEAN.get());

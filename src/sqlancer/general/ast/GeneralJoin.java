@@ -171,13 +171,13 @@ public class GeneralJoin implements Node<GeneralExpression> {
         if (Randomly.getBoolean()) {
             joinExpressions = getJoins(tableList, globalState);
         }
-        if (tableList.size() < 1 || Randomly.getBooleanWithRatherLowProbability()) {
+        if (tableList.isEmpty() || Randomly.getBooleanWithRatherLowProbability()) {
             return joinExpressions;
         }
         List<GeneralTable> tables = new ArrayList<>();
         tables.add(Randomly.fromList(tableList).getTable());
         for (int i = 0; i < Randomly.smallNumber(); i++) {
-            if (tableList.size() < 1) {
+            if (tableList.isEmpty()) {
                 return joinExpressions;
             }
             String subqueryName = "sub" + i;
