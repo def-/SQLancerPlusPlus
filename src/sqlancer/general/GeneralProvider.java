@@ -383,7 +383,9 @@ public class GeneralProvider extends SQLProviderAdapter<GeneralProvider.GeneralG
             globalState.getLogger().writeCurrent(sb);
             // check if the result is larger than 100K
             while (resultSet.next()) {
-                System.out.println("Join table size: " + resultSet.getLong(1));
+                if (globalState.getOptions().debugLogs()) {
+                    System.out.println("Join table size: " + resultSet.getLong(1));
+                }
                 if (resultSet.getLong(1) > 5000) {
                     // drop all the views
                     globalState.getLogger().writeCurrent("-- size:" + resultSet.getLong(1));

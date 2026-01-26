@@ -172,8 +172,8 @@ public class GeneralErrorHandler implements ErrorHandler {
                     stmtNum++;
                 }
             }
-            System.out.println("Successful query pairs rate: " + (double) qsuccess / queryNum);
-            System.out.println("Successful statements rate: " + (double) ssuccess / stmtNum);
+            System.out.println("Success rate for query pairs: " + (double) qsuccess / queryNum);
+            System.out.println("Success rate for statements: " + (double) ssuccess / stmtNum);
         }
 
         public void calcCompositeSuccess() {
