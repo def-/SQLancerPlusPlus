@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import sqlancer.Randomly;
-import sqlancer.common.ast.newast.Node;
+//import sqlancer.Randomly;
+//import sqlancer.common.ast.newast.Node;
 import sqlancer.common.query.ExpectedErrors;
 import sqlancer.common.query.SQLQueryAdapter;
 import sqlancer.common.schema.TableIndex;
@@ -15,8 +15,8 @@ import sqlancer.general.GeneralLearningManager.SQLFeature;
 import sqlancer.general.GeneralProvider.GeneralGlobalState;
 import sqlancer.general.GeneralSchema.GeneralColumn;
 import sqlancer.general.GeneralSchema.GeneralTable;
-import sqlancer.general.GeneralToStringVisitor;
-import sqlancer.general.ast.GeneralExpression;
+//import sqlancer.general.GeneralToStringVisitor;
+//import sqlancer.general.ast.GeneralExpression;
 import sqlancer.general.learner.GeneralFragments;
 import sqlancer.general.learner.GeneralStringBuilder;
 
@@ -96,11 +96,11 @@ public final class GeneralIndexGenerator {
         GeneralStringBuilder<GeneralIndexFragments> sb = new GeneralStringBuilder<>(globalState, fragments);
         globalState.getHandler().addScore(GeneratorNode.CREATE_INDEX);
         sb.append("CREATE ");
-        if (Randomly.getBoolean()) {
-            errors.add("Cant create unique index, table contains duplicate data on indexed column(s)");
-            globalState.getHandler().addScore(GeneratorNode.UNIQUE_INDEX);
-            sb.append("UNIQUE ");
-        }
+        //if (Randomly.getBoolean()) {
+        //    errors.add("Cant create unique index, table contains duplicate data on indexed column(s)");
+        //    globalState.getHandler().addScore(GeneratorNode.UNIQUE_INDEX);
+        //    sb.append("UNIQUE ");
+        //}
         sb.append("INDEX ");
         GeneralTable table = globalState.getSchema().getRandomTable(t -> !t.isView());
         // String indexName = table.getName() + Randomly.fromOptions("i0", "i1", "i2",
@@ -136,12 +136,12 @@ public final class GeneralIndexGenerator {
             // }
         }
         sb.append(") ", 2);
-        if (Randomly.getBooleanWithRatherLowProbability() && !fragments.getLearn()) {
-            sb.append(" WHERE ");
-            Node<GeneralExpression> expr = new GeneralExpressionGenerator(globalState).setColumns(table.getColumns())
-                    .generateExpression();
-            sb.append(GeneralToStringVisitor.asString(expr));
-        }
+        // if (Randomly.getBooleanWithRatherLowProbability() && !fragments.getLearn()) {
+        //     sb.append(" WHERE ");
+        //     Node<GeneralExpression> expr = new GeneralExpressionGenerator(globalState).setColumns(table.getColumns())
+        //             .generateExpression();
+        //     sb.append(GeneralToStringVisitor.asString(expr));
+        // }
         errors.add("already exists!");
         errors.add("Syntax");
         errors.addRegex(Pattern.compile(".*", Pattern.DOTALL));

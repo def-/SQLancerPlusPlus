@@ -66,7 +66,7 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
     @Parameter(names = "--use-deduplicator", description = "Use the deduplicator")
     public boolean useDeduplicator;
 
-    @Parameter(names = "--compatible-with", description = "The popupar DBMS to be compatible with")
+    @Parameter(names = "--compatible-with", description = "The popular DBMS to be compatible with")
     public String compatibleWith = "";
 
     @Parameter(names = "--use-retrieval-augmentation", description = "Enable The retrieval augmentation", arity = 1)
@@ -197,7 +197,42 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
                 return conn;
             }
         },
-        MATERIALIZE,
+        MATERIALIZE {
+            @Override
+            public Connection cleanOrSetUpDatabase(GeneralGlobalState globalState, String databaseName)
+                    throws SQLException {
+                Connection conn = DriverManager.getConnection(getJDBCString(globalState));
+                try (Statement s = conn.createStatement()) {
+                    s.execute("alter system set max_databases = 10000000");
+                    globalState.getState().logStatement("alter system set max_databases = 10000000");
+                }
+                try (Statement s = conn.createStatement()) {
+                    s.execute("alter system set max_tables = 10000000");
+                    globalState.getState().logStatement("alter system set max_tables = 10000000");
+                }
+                try (Statement s = conn.createStatement()) {
+                    s.execute("set cluster = quickstart");
+                    globalState.getState().logStatement("set cluster = quickstart");
+                }
+                try (Statement s = conn.createStatement()) {
+                    s.execute("DROP DATABASE IF EXISTS " + databaseName);
+                    globalState.getState().logStatement("DROP DATABASE IF EXIST " + databaseName);
+                }
+                try (Statement s = conn.createStatement()) {
+                    s.execute("CREATE DATABASE " + databaseName);
+                    globalState.getState().logStatement("CREATE DATABASE " + databaseName);
+                }
+                try (Statement s = conn.createStatement()) {
+                    s.execute("set database = " + databaseName);
+                    globalState.getState().logStatement("set database = " + databaseName);
+                }
+                try (Statement s = conn.createStatement()) {
+                    s.execute("set statement_timeout = 500000;");
+                    globalState.getState().logStatement("set statement_timeout to 500000;");
+                }
+                return conn;
+            }
+        },
         COCKROACHDB {
             @Override
             public Connection cleanOrSetUpDatabase(GeneralGlobalState globalState, String databaseName)

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
 
 import sqlancer.Randomly;
 import sqlancer.common.query.ExpectedErrors;
@@ -128,26 +128,26 @@ public final class GeneralTableGenerator {
             sb.append(String.format("%s ", columns.get(i).getType()), 1);
         }
         List<GeneralColumn> columnsToAdd = new ArrayList<>();
-        if (globalState.getDbmsSpecificOptions().testIndexes && !Randomly.getBooleanWithRatherLowProbability()) {
-            List<GeneralColumn> primaryKeyColumns = Randomly
-                    .nonEmptySubset(new ArrayList<>(columns.subList(0, columns.size() - 1)));
-            globalState.getHandler().addScore(GeneratorNode.PRIMARY_KEY);
-            sb.append(", PRIMARY KEY(");
-            String pkCols = primaryKeyColumns.stream().map(c -> c.getName()).collect(Collectors.joining(", "));
-            if (fragments.getLearn()) {
-                pkCols = primaryKeyColumns.stream().map(c -> "TEST_COLUMN" + columns.indexOf(c))
-                        .collect(Collectors.joining(", "));
-            }
-            sb.append(pkCols);
-            sb.append(")", 2);
-            // operate on the columns: if the column name is in primaryKeyColumns, then it
-            // is a primary key
-            for (GeneralColumn c : columns) {
-                columnsToAdd.add(new GeneralColumn(c.getName(), c.getType(), primaryKeyColumns.contains(c), false));
-            }
-        } else {
-            columnsToAdd = columns;
-        }
+        //if (globalState.getDbmsSpecificOptions().testIndexes && !Randomly.getBooleanWithRatherLowProbability()) {
+        //    List<GeneralColumn> primaryKeyColumns = Randomly
+        //            .nonEmptySubset(new ArrayList<>(columns.subList(0, columns.size() - 1)));
+        //    globalState.getHandler().addScore(GeneratorNode.PRIMARY_KEY);
+        //    sb.append(", PRIMARY KEY(");
+        //    String pkCols = primaryKeyColumns.stream().map(c -> c.getName()).collect(Collectors.joining(", "));
+        //    if (fragments.getLearn()) {
+        //        pkCols = primaryKeyColumns.stream().map(c -> "TEST_COLUMN" + columns.indexOf(c))
+        //                .collect(Collectors.joining(", "));
+        //    }
+        //    sb.append(pkCols);
+        //    sb.append(")", 2);
+        //    // operate on the columns: if the column name is in primaryKeyColumns, then it
+        //    // is a primary key
+        //    for (GeneralColumn c : columns) {
+        //        columnsToAdd.add(new GeneralColumn(c.getName(), c.getType(), primaryKeyColumns.contains(c), false));
+        //    }
+        //} else {
+        columnsToAdd = columns;
+        //}
         sb.append(")", 3);
         errors.addRegex(Pattern.compile(".*", Pattern.DOTALL));
         GeneralTable newTable = new GeneralTable(tableName, columnsToAdd, false);

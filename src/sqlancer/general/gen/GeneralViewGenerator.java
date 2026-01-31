@@ -24,6 +24,9 @@ public final class GeneralViewGenerator {
     public static SQLQueryAdapter generate(GeneralGlobalState globalState) {
         int nrColumns = Randomly.smallNumber() + 1;
         StringBuilder sb = new StringBuilder("CREATE ");
+        if (Randomly.getBoolean()) {
+            sb.append("MATERIALIZED ");
+        }
         sb.append("VIEW ");
         String viewName = globalState.getSchema().getFreeViewName();
         viewName = globalState.getHandler().getOption(GeneratorNode.CREATE_DATABASE) ? viewName

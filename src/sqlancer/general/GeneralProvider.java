@@ -386,14 +386,14 @@ public class GeneralProvider extends SQLProviderAdapter<GeneralProvider.GeneralG
                 if (globalState.getOptions().debugLogs()) {
                     System.out.println("Join table size: " + resultSet.getLong(1));
                 }
-                if (resultSet.getLong(1) > 5000) {
-                    // drop all the views
-                    globalState.getLogger().writeCurrent("-- size:" + resultSet.getLong(1));
-                    System.out.println("Join table size exceeds 10000, dropping all views");
-                    for (GeneralTable view : views) {
-                        dropView(globalState, view.getName());
-                    }
-                }
+                // if (resultSet.getLong(1) > 5000) {
+                //     // drop all the views
+                //     globalState.getLogger().writeCurrent("-- size:" + resultSet.getLong(1));
+                //     System.out.println("Join table size exceeds 10000, dropping all views");
+                //     for (GeneralTable view : views) {
+                //         dropView(globalState, view.getName());
+                //     }
+                // }
             }
         } catch (Throwable t) {
             throw new AssertionError(t);

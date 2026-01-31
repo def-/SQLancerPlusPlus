@@ -18,14 +18,14 @@ public class MainOptions {
 
     @Parameter(names = {
             "--num-threads" }, description = "How many threads should run concurrently to test separate databases")
-    private int nrConcurrentThreads = 4; // NOPMD
+    private int nrConcurrentThreads = 8; // NOPMD
 
     @Parameter(names = {
             "--random-seed" }, description = "A seed value != -1 that can be set to make the query and database generation deterministic")
     private long randomSeed = -1; // NOPMD
 
     @Parameter(names = { "--num-tries" }, description = "Specifies after how many found errors to stop testing")
-    private int totalNumberTries = 100; // NOPMD
+    private int totalNumberTries = 1000000; // NOPMD
 
     @Parameter(names = { "--max-num-inserts" }, description = "Specifies how many INSERT statements should be issued")
     private int maxNumberInserts = 20; // NOPMD
@@ -109,7 +109,7 @@ public class MainOptions {
     private StringGenerationStrategy randomStringGenerationStrategy = StringGenerationStrategy.SOPHISTICATED; // NOPMD
 
     @Parameter(names = "--string-constant-max-length", description = "Specify the maximum-length of generated string constants")
-    private int maxStringConstantLength = 10; // NOPMD
+    private int maxStringConstantLength = 100; // NOPMD
 
     @Parameter(names = "--use-constant-caching", description = "Specifies whether constants should be cached and re-used with a certain probability", arity = 1)
     private boolean useConstantCaching = true; // NOPMD
@@ -154,10 +154,11 @@ public class MainOptions {
     private boolean debugLogs; // NOPMD
 
     @Parameter(names = "--enable-extra-features", description = "Use extra features for testing")
-    private boolean enableExtraFeatures; // NOPMD
+    private boolean enableExtraFeatures = false; // NOPMD
 
     @Parameter(names = "--enable-learning", description = "Learn features for testing")
-    private boolean enableLearning; // NOPMD
+    // TODO: Needs OPENAI_API_KEY
+    private boolean enableLearning = false; // NOPMD
 
     @Parameter(names = "--reproduce-bugfile", description = "The file that contains the bug to reproduce", arity = 1)
     private String reproduceBugfile = ""; // NOPMD
