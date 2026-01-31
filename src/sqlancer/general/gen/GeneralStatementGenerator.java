@@ -62,10 +62,11 @@ public final class GeneralStatementGenerator {
         @Override
         protected String getExamples() {
             StringBuilder sb = new StringBuilder();
-            sb.append("0,ANALYZE\n");
-            sb.append("0,REINDEX\n");
-            sb.append("1,VACUUM TEST_TABLE\n");
-            sb.append("2,SET some_settings\n");
+            // TODO: Mz-specific
+            //sb.append("0,ANALYZE\n");
+            //sb.append("0,REINDEX\n");
+            //sb.append("1,VACUUM TEST_TABLE\n");
+            //sb.append("2,SET some_settings\n");
             // sb.append("Note: DO NOT include SQL commands that may create files in
             // OS.\n");
             return sb.toString();

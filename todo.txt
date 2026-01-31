@@ -1,0 +1,5 @@
+Add back regproc;'now', regclass;'pg_class' and regtype;'int4' in typegenerator.txt when https://github.com/MaterializeInc/database-issues/issues/10056 is fixed
+Add back BOOLEAN;? in operators.txt when https://github.com/MaterializeInc/database-issues/issues/10058 is fixed
+Add back int2vector;'1 2 3' in typegenerator.txt when https://github.com/MaterializeInc/database-issues/issues/10057 is fixed
+Add back tsrange;'[2020-01-01 00:00:00,2021-01-01 00:00:00)' and tstzrange;'[2020-01-01 00:00:00+00,2021-01-01 00:00:00+00)' when https://github.com/MaterializeInc/database-issues/issues/10060 is fixed
+GeneralStatementGenerator mz-specific commands like ANALYZE/VACUUM

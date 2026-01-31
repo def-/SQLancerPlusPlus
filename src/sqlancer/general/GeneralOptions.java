@@ -43,10 +43,10 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
     public boolean testRandomCommands;
 
     @Parameter(names = "--max-num-views", description = "The maximum number of views that can be generated for a database", arity = 1)
-    public int maxNumViews = 1;
+    public int maxNumViews = 2;
 
     @Parameter(names = "--max-num-updates", description = "The maximum number of UPDATE statements that are issued for a database", arity = 1)
-    public int maxNumUpdates = 5;
+    public int maxNumUpdates = 10;
 
     @Parameter(names = "--enable-error-handling", description = "Enable error handling", arity = 1)
     public boolean enableErrorHandling = true;
@@ -216,7 +216,7 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
                 }
                 try (Statement s = conn.createStatement()) {
                     s.execute("DROP DATABASE IF EXISTS " + databaseName);
-                    globalState.getState().logStatement("DROP DATABASE IF EXIST " + databaseName);
+                    globalState.getState().logStatement("DROP DATABASE IF EXISTS " + databaseName);
                 }
                 try (Statement s = conn.createStatement()) {
                     s.execute("CREATE DATABASE " + databaseName);

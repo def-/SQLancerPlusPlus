@@ -1,0 +1,41 @@
+bool;TRUE
+bool;FALSE
+bpchar;'<RANDOM_STRING>'
+bytea;'\x00'
+bytea;'\xDEADBEEF'
+char;'<RANDOM_STRING>'
+date;'<RANDOM_DATE>'
+daterange;'[2020-01-01,2021-01-01)'
+float4;<RANDOM_INT>
+float4;0.5
+float8;<RANDOM_INT>
+float8;0.5
+int2;<RANDOM_INT>
+int4;<RANDOM_INT>
+int8;<RANDOM_INT>
+int4range;'[1,10)'
+int8range;'[1,100)'
+interval;'1 day'
+interval;'2 hours'
+interval;'30 minutes'
+jsonb;'{}'
+jsonb;'{"key": "value"}'
+jsonb;'[]'
+int4 list;LIST[1,2,3]
+MAP[TEXT=>INT4];'{a=>1}'
+mz_timestamp;<RANDOM_INT>
+name;'<RANDOM_STRING>'
+numeric;<RANDOM_INT>
+numeric;123.456
+numrange;'[1.0,10.0)'
+oid;<RANDOM_POSITIVE_INT>
+text;'<RANDOM_STRING>'
+time;'12:00:00'
+time;'00:00:00'
+timestamp;'<RANDOM_TIMESTAMP>'
+timestamptz;'<RANDOM_TIMESTAMP>'
+uint2;<RANDOM_POSITIVE_INT>
+uint4;<RANDOM_POSITIVE_INT>
+uint8;<RANDOM_POSITIVE_INT>
+uuid;'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'
+varchar;'<RANDOM_STRING>'
