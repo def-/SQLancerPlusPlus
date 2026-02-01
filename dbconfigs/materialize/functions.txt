@@ -59,15 +59,6 @@ generate_series 2
 generate_subscripts 2
 get_bit 2
 get_byte 2
-has_cluster_privilege 2
-has_connection_privilege 2
-has_database_privilege 2
-has_role 2
-has_schema_privilege 2
-has_secret_privilege 2
-has_system_privilege 1
-has_table_privilege 2
-has_type_privilege 2
 hmac 3
 initcap 1
 int4range 2
@@ -138,7 +129,6 @@ pg_get_indexdef 1
 pg_get_ruledef 1
 pg_get_userbyid 1
 pg_get_viewdef 1
-pg_has_role 2
 pg_is_in_recovery 0
 pg_postmaster_start_time 0
 pg_relation_size 1

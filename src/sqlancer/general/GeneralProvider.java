@@ -50,6 +50,11 @@ import sqlancer.general.learner.GeneralFragments;
 @AutoService(DatabaseProvider.class)
 public class GeneralProvider extends SQLProviderAdapter<GeneralProvider.GeneralGlobalState, GeneralOptions> {
 
+    // QPG mutation operators
+    private enum QPGMutator {
+        INSERT, DELETE, UPDATE
+    }
+
     public GeneralProvider() {
         super(GeneralGlobalState.class, GeneralOptions.class);
     }
@@ -542,6 +547,59 @@ public class GeneralProvider extends SQLProviderAdapter<GeneralProvider.GeneralG
             GeneralTableGenerator.getFragments().updateFragmentsFromLearner(globalState);
         }
 
+    }
+
+    // QPG: initialize the weighted average reward for mutation operators
+    @Override
+    protected double[] initializeWeightedAverageReward() {
+        return new double[QPGMutator.values().length];
+    }
+
+    // QPG: obtain the query plan of a query using EXPLAIN
+    @Override
+    protected String getQueryPlan(String selectStr, GeneralGlobalState globalState) throws Exception {
+        String explainQuery = "EXPLAIN " + selectStr;
+        StringBuilder plan = new StringBuilder();
+        ExpectedErrors errors = new ExpectedErrors();
+        SQLQueryAdapter query = new SQLQueryAdapter(explainQuery, errors);
+        try {
+            SQLancerResultSet rs = query.executeAndGet(globalState);
+            if (rs == null) {
+                return "";
+            }
+            while (rs.next()) {
+                plan.append(rs.getString(1));
+                plan.append("\n");
+            }
+            rs.close();
+        } catch (Exception e) {
+            return "";
+        }
+        return plan.toString();
+    }
+
+    // QPG: execute a mutation operator
+    @Override
+    protected void executeMutator(int index, GeneralGlobalState globalState) throws Exception {
+        if (globalState.getSchema().getDatabaseTables().isEmpty()) {
+            throw new IgnoreMeException();
+        }
+        QPGMutator mutator = QPGMutator.values()[index];
+        SQLQueryAdapter query;
+        switch (mutator) {
+        case INSERT:
+            query = GeneralInsertGenerator.getQuery(globalState);
+            break;
+        case DELETE:
+            query = GeneralDeleteGenerator.generate(globalState);
+            break;
+        case UPDATE:
+            query = GeneralUpdateGenerator.getQuery(globalState);
+            break;
+        default:
+            throw new AssertionError("Unknown mutator: " + mutator);
+        }
+        globalState.executeStatement(query);
     }
 
     @Override

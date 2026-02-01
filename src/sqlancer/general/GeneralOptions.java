@@ -58,7 +58,7 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
     public boolean enableFeedback = true;
 
     @Parameter(names = "--untype-expr", description = "Allow untyped expressions", arity = 1)
-    public boolean untypeExpr;
+    public boolean untypeExpr = true;
 
     @Parameter(names = "--database-table-delim", description = "The delimiter for database tables", arity = 1)
     public String dbTableDelim = "_";
@@ -211,6 +211,13 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
                     globalState.getState().logStatement("alter system set max_tables = 10000000");
                 }
                 try (Statement s = conn.createStatement()) {
+                    s.execute("alter cluster quickstart set (size = '25cc')");
+                } catch (SQLException e) {
+                    try (Statement s = conn.createStatement()) {
+                        s.execute("alter cluster quickstart set (size = 'scale=1,workers=1')");
+                    }
+                }
+                try (Statement s = conn.createStatement()) {
                     s.execute("set cluster = quickstart");
                     globalState.getState().logStatement("set cluster = quickstart");
                 }
@@ -228,7 +235,7 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
                 }
                 try (Statement s = conn.createStatement()) {
                     s.execute("set statement_timeout = 500000;");
-                    globalState.getState().logStatement("set statement_timeout to 500000;");
+                    globalState.getState().logStatement("set statement_timeout = 500000;");
                 }
                 return conn;
             }

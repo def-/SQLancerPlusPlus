@@ -25,7 +25,7 @@ public class MainOptions {
     private long randomSeed = -1; // NOPMD
 
     @Parameter(names = { "--num-tries" }, description = "Specifies after how many found errors to stop testing")
-    private int totalNumberTries = 100; // NOPMD
+    private int totalNumberTries = 10000; // NOPMD
 
     @Parameter(names = { "--max-num-inserts" }, description = "Specifies how many INSERT statements should be issued")
     private int maxNumberInserts = 200; // NOPMD
