@@ -230,4 +230,9 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
         return reproducer;
     }
 
+    @Override
+    public String getLastQueryString() {
+        return optimizedQueryString;
+    }
+
 }

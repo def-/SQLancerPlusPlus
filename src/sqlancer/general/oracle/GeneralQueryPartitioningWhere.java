@@ -13,6 +13,7 @@ import sqlancer.general.GeneralToStringVisitor;
 
 public class GeneralQueryPartitioningWhere extends GeneralQueryPartitioningBase {
     private Reproducer<GeneralGlobalState> reproducer;
+    private String lastQueryString;
 
     public GeneralQueryPartitioningWhere(GeneralGlobalState state) {
         super(state);
@@ -67,6 +68,7 @@ public class GeneralQueryPartitioningWhere extends GeneralQueryPartitioningBase 
         super.check();
         select.setWhereClause(null);
         String originalQueryString = GeneralToStringVisitor.asString(select);
+        lastQueryString = originalQueryString;
         List<String> resultSet;
         try {
             resultSet = ComparatorHelper.getResultSetFirstColumnAsString(originalQueryString, errors, state);
@@ -120,6 +122,11 @@ public class GeneralQueryPartitioningWhere extends GeneralQueryPartitioningBase 
     @Override
     public Reproducer<GeneralGlobalState> getLastReproducer() {
         return reproducer;
+    }
+
+    @Override
+    public String getLastQueryString() {
+        return lastQueryString;
     }
 
 }
