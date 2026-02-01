@@ -148,7 +148,7 @@ public class MainOptions {
     private boolean canonicalizeSqlString = false; // NOPMD
 
     @Parameter(names = "--keep-logs", description = "Should keep logs of the executed queries", arity = 1)
-    private boolean keepLogs = false; // NOPMD
+    private boolean keepLogs = true; // NOPMD
 
     @Parameter(names = "--debug-logs", description = "Should println logs for debug usage")
     private boolean debugLogs; // NOPMD
