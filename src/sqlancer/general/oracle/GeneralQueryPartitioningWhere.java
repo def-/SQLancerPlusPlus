@@ -7,6 +7,7 @@ import java.util.List;
 import sqlancer.ComparatorHelper;
 import sqlancer.Randomly;
 import sqlancer.Reproducer;
+import sqlancer.general.GeneralComparatorHelper;
 import sqlancer.general.GeneralErrors;
 import sqlancer.general.GeneralProvider.GeneralGlobalState;
 import sqlancer.general.GeneralToStringVisitor;
@@ -71,7 +72,7 @@ public class GeneralQueryPartitioningWhere extends GeneralQueryPartitioningBase 
         lastQueryString = originalQueryString;
         List<String> resultSet;
         try {
-            resultSet = ComparatorHelper.getResultSetFirstColumnAsString(originalQueryString, errors, state);
+            resultSet = GeneralComparatorHelper.getResultSetFirstColumnAsString(originalQueryString, errors, state);
         } catch (Exception e) {
             if (select.getJoinList().size() == 0 && select.getFromList().size() <= 2) {
                 e.printStackTrace();
@@ -99,7 +100,7 @@ public class GeneralQueryPartitioningWhere extends GeneralQueryPartitioningBase 
 
         List<String> secondResultSet;
         try {
-            secondResultSet = ComparatorHelper.getCombinedResultSet(firstQueryString, secondQueryString,
+            secondResultSet = GeneralComparatorHelper.getCombinedResultSet(firstQueryString, secondQueryString,
                     thirdQueryString, combinedString, !orderBy, state, errors);
         } catch (Exception e) {
             state.getHandler().appendScoreToTable(false, true);

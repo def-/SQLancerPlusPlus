@@ -75,6 +75,9 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
     @Parameter(names = "--enable-direct-validation", description = "Enable direct validation", arity = 1)
     public boolean enableDirectValidation;
 
+    @Parameter(names = "--auto-index-selects", description = "Create an indexed view for each SELECT query and query through the view", arity = 1)
+    public boolean autoIndexSelects;
+
     public enum GeneralOracleFactory implements OracleFactory<GeneralGlobalState> {
         NOREC {
 

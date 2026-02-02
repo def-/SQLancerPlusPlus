@@ -32,6 +32,8 @@ import sqlancer.general.GeneralToStringVisitor;
 import sqlancer.general.ast.GeneralExpression;
 import sqlancer.general.ast.GeneralJoin;
 import sqlancer.general.ast.GeneralSelect;
+import sqlancer.general.gen.AutoIndexSelectHelper;
+import sqlancer.general.gen.AutoIndexSelectHelper.BooleanCountResult;
 import sqlancer.general.gen.GeneralExpressionGenerator;
 import sqlancer.general.gen.GeneralTypedExpressionGenerator;
 
@@ -161,6 +163,20 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
         select.setJoinList(joins);
         int secondCount = 0;
         unoptimizedQueryString = GeneralToStringVisitor.asString(select);
+
+        // Use auto-index-selects if enabled
+        if (AutoIndexSelectHelper.isEnabled(state)) {
+            BooleanCountResult result = AutoIndexSelectHelper.executeBooleanCountThroughIndexedView(
+                    unoptimizedQueryString, state, errors);
+            if (!result.isSuccess()) {
+                if (result.getErrorMessage() != null) {
+                    throw new AssertionError(unoptimizedQueryString + " -- " + result.getErrorMessage());
+                }
+                return -1;
+            }
+            return result.getCount();
+        }
+
         // errors.add("canceling statement due to statement timeout");
         SQLQueryAdapter q = new SQLQueryAdapter(unoptimizedQueryString, errors);
         SQLancerResultSet rs;
@@ -207,6 +223,21 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
         // select.setSelectType(SelectType.ALL);
         optimizedSelect.setJoinList(joins);
         optimizedQueryString = GeneralToStringVisitor.asString(optimizedSelect);
+
+        // Use auto-index-selects if enabled
+        if (AutoIndexSelectHelper.isEnabled(state)) {
+            BooleanCountResult result = AutoIndexSelectHelper.executeRowCountThroughIndexedView(
+                    optimizedQueryString, state, errors);
+            if (!result.isSuccess()) {
+                state.getHandler().appendScoreToTable(false, true);
+                if (result.getErrorMessage() != null) {
+                    state.getLogger().writeCurrent(result.getErrorMessage());
+                }
+                throw new IgnoreMeException();
+            }
+            return result.getCount();
+        }
+
         int firstCount = 0;
         try (Statement stat = con.createStatement()) {
             if (options.logEachSelect()) {
