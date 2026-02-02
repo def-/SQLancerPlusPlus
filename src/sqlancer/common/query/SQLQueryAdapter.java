@@ -128,6 +128,11 @@ public class SQLQueryAdapter extends Query<SQLConnection> {
     @Override
     public <G extends GlobalState<?, ?, SQLConnection>> SQLancerResultSet executeAndGet(G globalState, String... fills)
             throws SQLException {
+        return executeAndGet(globalState, 0, fills);
+    }
+
+    public <G extends GlobalState<?, ?, SQLConnection>> SQLancerResultSet executeAndGet(G globalState, int maxRows, String... fills)
+            throws SQLException {
         Statement s;
         if (fills.length > 0) {
             s = globalState.getConnection().prepareStatement(fills[0]);
@@ -136,6 +141,9 @@ public class SQLQueryAdapter extends Query<SQLConnection> {
             }
         } else {
             s = globalState.getConnection().createStatement();
+        }
+        if (maxRows > 0) {
+            s.setMaxRows(maxRows);
         }
         ResultSet result;
         try {

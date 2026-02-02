@@ -51,6 +51,16 @@ public abstract class Query<C extends SQLancerDBConnection> implements Loggable 
         return executeAndGet(globalState);
     }
 
+    public <G extends GlobalState<?, ?, C>> SQLancerResultSet executeAndGetLogged(G globalState, int maxRows) throws Exception {
+        logQueryString(globalState);
+        return executeAndGet(globalState, maxRows);
+    }
+
+    public <G extends GlobalState<?, ?, C>> SQLancerResultSet executeAndGet(G globalState, int maxRows)
+            throws Exception {
+        throw new AssertionError();
+    }
+
     private <G extends GlobalState<?, ?, C>> void logQueryString(G globalState) {
         if (globalState.getOptions().logEachSelect()) {
             globalState.getLogger().writeCurrent(getQueryString());

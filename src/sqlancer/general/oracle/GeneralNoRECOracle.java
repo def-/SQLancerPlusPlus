@@ -181,7 +181,7 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
         SQLQueryAdapter q = new SQLQueryAdapter(unoptimizedQueryString, errors);
         SQLancerResultSet rs;
         try {
-            rs = q.executeAndGetLogged(state);
+            rs = q.executeAndGetLogged(state, 100000); // Limit rows to avoid OOM
         } catch (Exception e) {
             throw new AssertionError(unoptimizedQueryString, e);
         }
@@ -240,6 +240,7 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
 
         int firstCount = 0;
         try (Statement stat = con.createStatement()) {
+            stat.setMaxRows(100000); // Limit rows to avoid OOM; query plan unchanged
             if (options.logEachSelect()) {
                 logger.writeCurrent(optimizedQueryString);
             }

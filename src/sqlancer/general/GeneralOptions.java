@@ -222,6 +222,10 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
                     globalState.getState().logStatement("set database = " + databaseName);
                 }
                 try (Statement s = conn.createStatement()) {
+                    s.execute("set auto_route_introspection_queries = false");
+                    globalState.getState().logStatement("set auto_route_introspection_queries = false;");
+                }
+                try (Statement s = conn.createStatement()) {
                     s.execute("set statement_timeout = 5000;");
                     globalState.getState().logStatement("set statement_timeout = 5000;");
                 }

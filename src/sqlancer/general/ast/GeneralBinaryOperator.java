@@ -166,7 +166,7 @@ public class GeneralBinaryOperator implements Operator {
 
     private static Map<String, GeneralCompositeDataType> initOperators() {
         Map<String, GeneralCompositeDataType> ops = new HashMap<>();
-        ops.put("$$$", GeneralDataType.BOOLEAN.get());
+        //ops.put("$$$", GeneralDataType.BOOLEAN.get());
         ops.put("<>", GeneralDataType.BOOLEAN.get());
         ops.put("!=", GeneralDataType.BOOLEAN.get());
         ops.put("<", GeneralDataType.BOOLEAN.get());

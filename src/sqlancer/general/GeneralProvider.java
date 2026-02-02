@@ -461,6 +461,10 @@ public class GeneralProvider extends SQLProviderAdapter<GeneralProvider.GeneralG
             int nrTries = 0;
             do {
                 SQLQueryAdapter qt = GeneralTableGenerator.getQuery(globalState);
+                if (qt == null) {
+                    success = false;
+                    continue;
+                }
                 GeneralTable updateTable = globalState.getUpdateTable();
                 // TODO add error handling here
                 success = globalState.executeStatement(qt);
@@ -601,7 +605,9 @@ public class GeneralProvider extends SQLProviderAdapter<GeneralProvider.GeneralG
         default:
             throw new AssertionError("Unknown mutator: " + mutator);
         }
-        globalState.executeStatement(query);
+        if (query != null) {
+            globalState.executeStatement(query);
+        }
     }
 
     @Override
