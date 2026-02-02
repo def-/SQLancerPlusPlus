@@ -206,21 +206,6 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
                     throws SQLException {
                 Connection conn = DriverManager.getConnection(getJDBCString(globalState));
                 try (Statement s = conn.createStatement()) {
-                    s.execute("alter system set max_databases = 10000000");
-                    globalState.getState().logStatement("alter system set max_databases = 10000000");
-                }
-                try (Statement s = conn.createStatement()) {
-                    s.execute("alter system set max_tables = 10000000");
-                    globalState.getState().logStatement("alter system set max_tables = 10000000");
-                }
-                try (Statement s = conn.createStatement()) {
-                    s.execute("alter cluster quickstart set (size = '25cc')");
-                } catch (SQLException e) {
-                    try (Statement s = conn.createStatement()) {
-                        s.execute("alter cluster quickstart set (size = 'scale=1,workers=1')");
-                    }
-                }
-                try (Statement s = conn.createStatement()) {
                     s.execute("set cluster = quickstart");
                     globalState.getState().logStatement("set cluster = quickstart");
                 }
@@ -237,8 +222,8 @@ public class GeneralOptions implements DBMSSpecificOptions<GeneralOptions.Genera
                     globalState.getState().logStatement("set database = " + databaseName);
                 }
                 try (Statement s = conn.createStatement()) {
-                    s.execute("set statement_timeout = 500000;");
-                    globalState.getState().logStatement("set statement_timeout = 500000;");
+                    s.execute("set statement_timeout = 5000;");
+                    globalState.getState().logStatement("set statement_timeout = 5000;");
                 }
                 return conn;
             }
