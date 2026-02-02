@@ -51,7 +51,7 @@ public abstract class GeneralFragments {
                 if (g.getSchema().getDatabaseTables().isEmpty()) {
                     return GeneralConstant.createVartypeConstant("c0");
                 }
-                GeneralTable table = g.getSchema().getRandomTable(t -> !t.isView());
+                GeneralTable table = g.getSchema().getRandomTableOrBailout(t -> !t.isView() && !t.getColumns().isEmpty());
                 return new ColumnReferenceNode<GeneralExpression, GeneralColumn>(table.getRandomColumn());
             }
         }, "Random column"), RANDOM_TABLE((g) -> {
@@ -71,7 +71,7 @@ public abstract class GeneralFragments {
                 columns = g.getUpdateTable().getColumns();
                 gen = GeneralRandomQuerySynthesizer.getExpressionGenerator(g, columns);
             } else {
-                GeneralTable table = g.getSchema().getRandomTable();
+                GeneralTable table = g.getSchema().getRandomTableOrBailout(t -> !t.getColumns().isEmpty());
                 columns = table.getColumns();
                 gen = GeneralRandomQuerySynthesizer.getExpressionGenerator(g, columns);
             }

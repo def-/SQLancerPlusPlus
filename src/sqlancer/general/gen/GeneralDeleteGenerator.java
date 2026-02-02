@@ -16,7 +16,7 @@ public final class GeneralDeleteGenerator {
     public static SQLQueryAdapter generate(GeneralGlobalState globalState) {
         StringBuilder sb = new StringBuilder("DELETE FROM ");
         ExpectedErrors errors = new ExpectedErrors();
-        GeneralTable table = globalState.getSchema().getRandomTable(t -> !t.isView());
+        GeneralTable table = globalState.getSchema().getRandomTableOrBailout(t -> !t.isView() && !t.getColumns().isEmpty());
         sb.append(table.getName());
         if (Randomly.getBoolean()) {
             sb.append(" WHERE ");

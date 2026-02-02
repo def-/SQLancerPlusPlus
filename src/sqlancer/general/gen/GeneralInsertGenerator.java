@@ -32,7 +32,7 @@ public class GeneralInsertGenerator extends AbstractInsertGenerator<GeneralColum
         globalState.setCreatingDatabase(true);
         sb.append("INSERT INTO ");
         globalState.getHandler().addScore(GeneratorNode.INSERT);
-        GeneralTable table = globalState.getSchema().getRandomTable(t -> !t.isView());
+        GeneralTable table = globalState.getSchema().getRandomTableOrBailout(t -> !t.isView() && !t.getColumns().isEmpty());
         List<GeneralColumn> columns = table.getRandomNonEmptyColumnSubset();
         sb.append(table.getName());
         sb.append("(");

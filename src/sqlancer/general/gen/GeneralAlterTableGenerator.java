@@ -28,7 +28,7 @@ public final class GeneralAlterTableGenerator {
         GeneralErrors.addExpressionErrors(errors);
         boolean couldAffectSchema = true;
         StringBuilder sb = new StringBuilder("ALTER TABLE ");
-        GeneralTable table = globalState.getSchema().getRandomTable(t -> !t.isView());
+        GeneralTable table = globalState.getSchema().getRandomTableOrBailout(t -> !t.isView() && !t.getColumns().isEmpty());
         List<GeneralColumn> columnsToChange = new ArrayList<>(table.getColumns());
         List<TableIndex> indexes = new ArrayList<>(table.getIndexes());
         GeneralExpressionGenerator gen = new GeneralExpressionGenerator(globalState).setColumns(table.getColumns());

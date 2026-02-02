@@ -111,9 +111,9 @@ public final class GeneralStatementGenerator {
         }
         String stmt = sb.toString();
         // if stmt is empty, return null
-        //if (stmt.equals(";")) {
-        //    stmt = "ANALYZE;";
-        //}
+        if (stmt.equals(";")) {
+            return null;
+        }
         return new SQLQueryAdapter(stmt, errors, false, false);
     }
 

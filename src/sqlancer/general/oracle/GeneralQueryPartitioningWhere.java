@@ -76,7 +76,8 @@ public class GeneralQueryPartitioningWhere extends GeneralQueryPartitioningBase 
         } catch (Exception e) {
             if (select.getJoinList().size() == 0 && select.getFromList().size() <= 2) {
                 e.printStackTrace();
-                throw new AssertionError(e.getMessage()
+                String msg = e.getMessage() != null ? e.getMessage() : e.toString();
+                throw new AssertionError(msg
                         + "\n You probably triggered an error in the DBMS by the previous query, as the query is a simple select that could not easily have issue. Check the *-cur.log");
             }
             // Noticed that, we would still add some extra information to the generator table. Since the UNION ALL query

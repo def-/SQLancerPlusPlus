@@ -29,7 +29,7 @@ public final class GeneralUpdateGenerator extends AbstractUpdateGenerator<Genera
     }
 
     private SQLQueryAdapter generate() {
-        GeneralTable table = globalState.getSchema().getRandomTable(t -> !t.isView());
+        GeneralTable table = globalState.getSchema().getRandomTableOrBailout(t -> !t.isView() && !t.getColumns().isEmpty());
         List<GeneralColumn> columns = table.getRandomNonEmptyColumnSubset();
         gen = GeneralRandomQuerySynthesizer.getExpressionGenerator(globalState, columns);
         GeneralErrors.addInsertErrors(errors);

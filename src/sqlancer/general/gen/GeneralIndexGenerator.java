@@ -102,7 +102,7 @@ public final class GeneralIndexGenerator {
         //    sb.append("UNIQUE ");
         //}
         sb.append("INDEX ");
-        GeneralTable table = globalState.getSchema().getRandomTable(t -> !t.isView());
+        GeneralTable table = globalState.getSchema().getRandomTableOrBailout(t -> !t.isView() && !t.getColumns().isEmpty());
         // String indexName = table.getName() + Randomly.fromOptions("i0", "i1", "i2",
         // "i3", "i4");
         // TODO: make it schema aware

@@ -23,4 +23,6 @@ Add back in functions.txt when https://github.com/MaterializeInc/database-issues
   has_table_privilege 2
   has_type_privilege 2
 
+Add back pg_get_viewdef 1 in functions.txt when https://github.com/MaterializeInc/database-issues/issues/10066 is fixed
+
 GeneralStatementGenerator mz-specific commands like ANALYZE/VACUUM

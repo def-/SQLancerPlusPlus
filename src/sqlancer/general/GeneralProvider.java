@@ -489,7 +489,9 @@ public class GeneralProvider extends SQLProviderAdapter<GeneralProvider.GeneralG
         if (globalState.getDbmsSpecificOptions().testRandomCommands) {
             for (int i = 0; i < Randomly.fromOptions(5, 6, 7); i++) {
                 SQLQueryAdapter sg = GeneralStatementGenerator.getQuery(globalState);
-                globalState.executeStatement(sg);
+                if (sg != null) {
+                    globalState.executeStatement(sg);
+                }
             }
         }
         // globalState.setCreatingDatabase(false);
