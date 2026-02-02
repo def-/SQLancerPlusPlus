@@ -1,5 +1,4 @@
 abs 1
-aclexplode 1
 acos 1
 acosh 1
 age 2
@@ -73,14 +72,9 @@ initcap 1
 int4range 2
 int8range 2
 isempty 1
-jsonb_array_elements 1
-jsonb_array_elements_text 1
 jsonb_array_length 1
 jsonb_build_array 0
 jsonb_build_object 0
-jsonb_each 1
-jsonb_each_text 1
-jsonb_object_keys 1
 jsonb_pretty 1
 jsonb_strip_nulls 1
 jsonb_typeof 1
@@ -153,7 +147,6 @@ regexp_match 2
 regexp_matches 2
 regexp_replace 3
 regexp_split_to_array 2
-regexp_split_to_table 2
 repeat 2
 repeat_row 1
 replace 3
