@@ -23,6 +23,8 @@ import sqlancer.general.GeneralProvider.GeneralGlobalState;
  */
 public final class AutoIndexSelectHelper {
 
+    private static final int MAX_ROWS_LIMIT = 100000;
+
     private AutoIndexSelectHelper() {
     }
 
@@ -118,6 +120,7 @@ public final class AutoIndexSelectHelper {
 
             // Log and execute select from view
             logGeneratedSql(globalState, viewSelectSql);
+            stmt.setMaxRows(MAX_ROWS_LIMIT);
             try (ResultSet rs = stmt.executeQuery(viewSelectSql)) {
                 while (rs.next()) {
                     String value = rs.getString(1);
@@ -139,6 +142,10 @@ public final class AutoIndexSelectHelper {
             // Drop view
             tryDropView(stmt, dropViewSql, globalState);
 
+            // If we hit the limit, return error to skip comparison
+            if (results.size() == MAX_ROWS_LIMIT) {
+                return new IndexedSelectResult("Row limit exceeded");
+            }
             return new IndexedSelectResult(results);
         } catch (SQLException e) {
             return new IndexedSelectResult(e.getMessage());
@@ -178,14 +185,20 @@ public final class AutoIndexSelectHelper {
             GeneralGlobalState globalState,
             ExpectedErrors errors) {
         List<String> results = new ArrayList<>();
-        try (Statement stmt = globalState.getConnection().createStatement();
-             ResultSet rs = stmt.executeQuery(selectQuery)) {
-            while (rs.next()) {
-                String value = rs.getString(1);
-                if (value != null) {
-                    value = value.replaceAll("[\\.]0+$", "");
+        try (Statement stmt = globalState.getConnection().createStatement()) {
+            stmt.setMaxRows(MAX_ROWS_LIMIT);
+            try (ResultSet rs = stmt.executeQuery(selectQuery)) {
+                while (rs.next()) {
+                    String value = rs.getString(1);
+                    if (value != null) {
+                        value = value.replaceAll("[\\.]0+$", "");
+                    }
+                    results.add(value);
                 }
-                results.add(value);
+            }
+            // If we hit the limit, return error to skip comparison
+            if (results.size() == MAX_ROWS_LIMIT) {
+                return new IndexedSelectResult("Row limit exceeded");
             }
             return new IndexedSelectResult(results);
         } catch (SQLException e) {
@@ -398,8 +411,11 @@ public final class AutoIndexSelectHelper {
 
             // Execute select and count booleans
             logGeneratedSql(globalState, viewSelectSql);
+            stmt.setMaxRows(MAX_ROWS_LIMIT);
+            int rowsProcessed = 0;
             try (ResultSet rs = stmt.executeQuery(viewSelectSql)) {
                 while (rs.next()) {
+                    rowsProcessed++;
                     count += rs.getBoolean(1) ? 1 : 0;
                 }
             } catch (SQLException e) {
@@ -413,6 +429,10 @@ public final class AutoIndexSelectHelper {
             // Drop view
             tryDropView(stmt, dropViewSql, globalState);
 
+            // If we hit the limit, return failure to skip comparison
+            if (rowsProcessed == MAX_ROWS_LIMIT) {
+                return new BooleanCountResult(null, true);
+            }
             return new BooleanCountResult(count);
         } catch (SQLException e) {
             return new BooleanCountResult(e.getMessage(), true);
@@ -475,6 +495,7 @@ public final class AutoIndexSelectHelper {
 
             // Execute select and count rows
             logGeneratedSql(globalState, viewSelectSql);
+            stmt.setMaxRows(MAX_ROWS_LIMIT);
             try (ResultSet rs = stmt.executeQuery(viewSelectSql)) {
                 while (rs.next()) {
                     count++;
@@ -490,6 +511,10 @@ public final class AutoIndexSelectHelper {
             // Drop view
             tryDropView(stmt, dropViewSql, globalState);
 
+            // If we hit the limit, return failure to skip comparison
+            if (count == MAX_ROWS_LIMIT) {
+                return new BooleanCountResult(null, true);
+            }
             return new BooleanCountResult(count);
         } catch (SQLException e) {
             return new BooleanCountResult(e.getMessage(), true);

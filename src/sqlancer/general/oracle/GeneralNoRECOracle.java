@@ -39,6 +39,8 @@ import sqlancer.general.gen.GeneralTypedExpressionGenerator;
 
 public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements TestOracle<GeneralGlobalState> {
 
+    private static final int MAX_ROWS_LIMIT = 100000;
+
     private final GeneralSchema s;
     private Reproducer<GeneralGlobalState> reproducer;
     private GeneralSelect optimizedSelect;
@@ -89,6 +91,7 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
                 // first count
                 int firstCount = -1;
                 try (Statement stat = globalState.getConnection().createStatement()) {
+                    stat.setMaxRows(MAX_ROWS_LIMIT);
                     try (ResultSet rs = stat.executeQuery(firstQueryString)) {
                         firstCount = 0;
                         while (rs.next()) {
@@ -101,6 +104,10 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
                 }
 
                 if (firstCount == -1 || secondCount == -1) {
+                    return false;
+                }
+                // Skip comparison if we hit the row limit
+                if (firstCount == MAX_ROWS_LIMIT) {
                     return false;
                 }
                 if (firstCount != secondCount) {
@@ -137,6 +144,10 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
                 randomWhereCondition, joins);
         if (firstCount == -1 || secondCount == -1) {
             state.getHandler().appendScoreToTable(false, true);
+            throw new IgnoreMeException();
+        }
+        // Skip comparison if first query hit the row limit (can't verify correctness)
+        if (firstCount == MAX_ROWS_LIMIT) {
             throw new IgnoreMeException();
         }
         if (firstCount != secondCount) {
@@ -181,7 +192,7 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
         SQLQueryAdapter q = new SQLQueryAdapter(unoptimizedQueryString, errors);
         SQLancerResultSet rs;
         try {
-            rs = q.executeAndGetLogged(state, 100000); // Limit rows to avoid OOM
+            rs = q.executeAndGetLogged(state);
         } catch (Exception e) {
             throw new AssertionError(unoptimizedQueryString, e);
         }
@@ -240,7 +251,7 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
 
         int firstCount = 0;
         try (Statement stat = con.createStatement()) {
-            stat.setMaxRows(100000); // Limit rows to avoid OOM; query plan unchanged
+            stat.setMaxRows(MAX_ROWS_LIMIT); // Limit rows to avoid OOM; query plan unchanged
             if (options.logEachSelect()) {
                 logger.writeCurrent(optimizedQueryString);
             }

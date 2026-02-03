@@ -109,7 +109,6 @@ map_length 1
 md5 1
 mod 2
 normalize 2
-now 0
 numrange 2
 obj_description 2
 octet_length 1
@@ -118,12 +117,6 @@ pg_backend_pid 0
 pg_cancel_backend 1
 pg_column_size 1
 pg_encoding_to_char 1
-pg_get_constraintdef 1
-pg_get_expr 2
-pg_get_indexdef 1
-pg_get_ruledef 1
-pg_get_userbyid 1
-pg_get_viewdef 1
 pg_is_in_recovery 0
 pg_postmaster_start_time 0
 pg_relation_size 1

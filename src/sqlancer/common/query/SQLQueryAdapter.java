@@ -131,6 +131,12 @@ public class SQLQueryAdapter extends Query<SQLConnection> {
         return executeAndGet(globalState, 0, fills);
     }
 
+    @Override
+    public <G extends GlobalState<?, ?, SQLConnection>> SQLancerResultSet executeAndGet(G globalState, int maxRows)
+            throws SQLException {
+        return executeAndGet(globalState, maxRows, new String[0]);
+    }
+
     public <G extends GlobalState<?, ?, SQLConnection>> SQLancerResultSet executeAndGet(G globalState, int maxRows, String... fills)
             throws SQLException {
         Statement s;

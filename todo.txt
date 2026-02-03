@@ -8,21 +8,4 @@ Add back tsrange;'[2020-01-01 00:00:00,2021-01-01 00:00:00)' and tstzrange;'[202
 
 Add back BOOLEAN;@>, BOOLEAN;<@ in operators.txt when https://github.com/MaterializeInc/database-issues/issues/10065 is fixed
 
-Add back in functions.txt when https://github.com/MaterializeInc/database-issues/issues/10067 is fixed:
-  pg_has_role 2
-  pg_type_is_visible 1
-  pg_function_is_visible 1
-  pg_table_is_visible 1
-  has_secret_privilege 2
-  has_cluster_privilege 2
-  has_connection_privilege 2
-  has_database_privilege 2
-  has_role 2
-  has_schema_privilege 2
-  has_system_privilege 1
-  has_table_privilege 2
-  has_type_privilege 2
-
-Add back pg_get_viewdef 1 in functions.txt when https://github.com/MaterializeInc/database-issues/issues/10066 is fixed
-
 GeneralStatementGenerator mz-specific commands like ANALYZE/VACUUM

@@ -15,6 +15,8 @@ import sqlancer.common.query.SQLancerResultSet;
 
 public final class ComparatorHelper {
 
+    private static final int MAX_ROWS_LIMIT = 100000;
+
     private ComparatorHelper() {
     }
 
@@ -53,7 +55,7 @@ public final class ComparatorHelper {
         List<String> resultSet = new ArrayList<>();
         SQLancerResultSet result = null;
         try {
-            result = q.executeAndGet(state);
+            result = q.executeAndGet(state, MAX_ROWS_LIMIT);
             if (result == null) {
                 throw new IgnoreMeException();
             }
@@ -81,6 +83,10 @@ public final class ComparatorHelper {
             if (result != null && !result.isClosed()) {
                 result.close();
             }
+        }
+        // Skip comparison if we hit the row limit
+        if (resultSet.size() == MAX_ROWS_LIMIT) {
+            throw new IgnoreMeException();
         }
         return resultSet;
     }
