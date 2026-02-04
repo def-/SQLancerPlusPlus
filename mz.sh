@@ -8,4 +8,5 @@ until psql postgres://mz_system:materialize@127.0.0.1:6877/materialize -c "alter
   sleep 2
 done
 psql postgres://mz_system:materialize@127.0.0.1:6877/materialize -c "alter system set max_tables = 1000000;"
+psql postgres://mz_system:materialize@127.0.0.1:6877/materialize -c "alter system set max_materialized_views = 1000000;"
 psql postgres://mz_system:materialize@127.0.0.1:6877/materialize -c "alter system set max_databases = 1000000;"
