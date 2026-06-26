@@ -74,7 +74,7 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
                 SQLQueryAdapter q = new SQLQueryAdapter(secondQueryString, errors);
                 SQLancerResultSet srs;
                 try {
-                    srs = q.executeAndGet(globalState);
+                    srs = q.executeAndGet(globalState, MAX_ROWS_LIMIT);
                 } catch (Exception e) {
                     this.errorMessage = e.getMessage();
                     return true;
@@ -82,10 +82,16 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
                 if (srs == null) {
                     secondCount = -1;
                 } else {
+                    int rowsProcessed = 0;
                     while (srs.next()) {
+                        rowsProcessed++;
                         secondCount += srs.getBoolean(1) ? 1 : 0;
                     }
                     srs.close();
+                    // Truncated at the row limit, so not comparable; skip below.
+                    if (rowsProcessed == MAX_ROWS_LIMIT) {
+                        secondCount = -1;
+                    }
                 }
 
                 // first count
@@ -192,15 +198,20 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
         SQLQueryAdapter q = new SQLQueryAdapter(unoptimizedQueryString, errors);
         SQLancerResultSet rs;
         try {
-            rs = q.executeAndGetLogged(state);
+            // The unoptimized query has no WHERE clause, so it returns one row per
+            // row of the (potentially huge) cross product. Without a limit the JDBC
+            // driver buffers the entire result set and the JVM runs out of heap.
+            rs = q.executeAndGetLogged(state, MAX_ROWS_LIMIT);
         } catch (Exception e) {
             throw new AssertionError(unoptimizedQueryString, e);
         }
         if (rs == null) {
             return -1;
         }
+        int rowsProcessed = 0;
         try {
             while (rs.next()) {
+                rowsProcessed++;
                 secondCount += rs.getBoolean(1) ? 1 : 0;
             }
         } catch (Exception e) {
@@ -211,6 +222,11 @@ public class GeneralNoRECOracle extends NoRECBase<GeneralGlobalState> implements
             throw new IgnoreMeException();
         }
         rs.close();
+        // If we hit the row limit the count is truncated and not comparable to
+        // the first query's count, so skip the comparison.
+        if (rowsProcessed == MAX_ROWS_LIMIT) {
+            return -1;
+        }
         return secondCount;
     }
 
