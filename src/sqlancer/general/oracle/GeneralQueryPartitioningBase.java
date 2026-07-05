@@ -64,7 +64,11 @@ public class GeneralQueryPartitioningBase
 
     List<Node<GeneralExpression>> generateFetchColumns() {
         List<Node<GeneralExpression>> columns = new ArrayList<>();
-        if (Randomly.getBoolean()) {
+        // The randomly picked target tables may all be column-less (a table can be
+        // dropped down to zero columns via ALTER TABLE DROP COLUMN), leaving no columns
+        // to select. Fall back to "*" in that case, otherwise nonEmptySubset asserts on
+        // the empty column set.
+        if (Randomly.getBoolean() || targetTables.getColumns().isEmpty()) {
             columns.add(new ColumnReferenceNode<>(new GeneralColumn("*", null, false, false)));
         } else {
             columns = Randomly.nonEmptySubset(targetTables.getColumns()).stream()
